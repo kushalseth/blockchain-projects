@@ -48,6 +48,15 @@ class Header extends React.Component {
   };
 
   async walletConnect() {
+    console.log(`hi i am inside walletConnect ${window.ethereum} `);
+    
+        if (!window.ethereum) {
+      alert(
+        "🦊 MetaMask not found. Please install MetaMask to connect your wallet."
+      );
+      return;
+    }
+
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
@@ -217,19 +226,32 @@ class Header extends React.Component {
             </Typography>
           </Stack>
           <Stack flexDirection="row" gap={5} alignItems="center">
-            <Button
-              variant="contained"
-              color="success"
-              disabled={this.state.account ? true : false}
-              sx={{
-                fontWeight: 700,
-                display: { xs: "none", sm: "block" },
-                color: this.props.theme.palette.common.white,
-              }}
-              onClick={() => this.walletConnect()}
-            >
-              Connect Wallet
-            </Button>
+            {this.state.account ? (
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => {
+                  this.setState({ account: "", position: "" });
+                  this.props.dispatch({ type: "SET_ACCOUNT", payload: "" });
+                  this.props.dispatch({ type: "SET_POSITION", payload: "" });
+                }}
+              >
+                Disconnect
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="success"
+                sx={{
+                  fontWeight: 700,
+                  display: { xs: "none", sm: "block" },
+                  color: this.props.theme.palette.common.white,
+                }}
+                onClick={() => this.walletConnect()}
+              >
+                Connect Wallet
+              </Button>
+            )}
             <Stack flexDirection="row" alignItems="center" gap={4}>
               <Stack
                 flexDirection="row"

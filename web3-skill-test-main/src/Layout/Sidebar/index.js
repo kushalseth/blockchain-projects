@@ -44,6 +44,14 @@ const Menu = (props) => {
   const dispatch = useDispatch();
 
   const walletConnect = async () => {
+        console.log(`hi i am inside walletConnect ${window.ethereum} `);
+    
+        if (!window.ethereum) {
+      alert(
+        "🦊 MetaMask not found. Please install MetaMask to connect your wallet."
+      );
+      return;
+    }
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
@@ -189,16 +197,38 @@ const Menu = (props) => {
             </Stack>
           </Stack>
         </ListItem>
-        <ListItem sx={{ p: 0.5, pb: 2, display: { sm: "none", xs: "flex" } }}>
+        {account ? (
+          <Button
+            variant="outlined"
+            color="error"
+            fullWidth
+            sx={{
+              fontWeight: 700,
+              gap: 1.5,
+              borderRadius: 2,
+              justifyContent: "flex-start",
+              display: { xs: "flex" },
+            }}
+            onClick={() => {
+              setAccount("");
+              setPosition("");
+              dispatch({ type: "SET_ACCOUNT", payload: "" });
+              dispatch({ type: "SET_POSITION", payload: "" });
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: "unset" }}>
+              <AccountBalanceWalletOutlinedIcon />
+            </ListItemIcon>
+            <Typography variant="body1">Disconnect</Typography>
+          </Button>
+        ) : (
           <Button
             variant="outlined"
             color="success"
             fullWidth
-            disabled={account ? true : false}
             sx={{
               fontWeight: 700,
               gap: 1.5,
-              // py: 1,
               borderRadius: 2,
               justifyContent: "flex-start",
               display: { xs: "flex" },
@@ -210,7 +240,7 @@ const Menu = (props) => {
             </ListItemIcon>
             <Typography variant="body1">Connect Wallet</Typography>
           </Button>
-        </ListItem>
+        )}
 
         {[
           { text: "Dashboard", route: "/", icon: DashboardOutlinedIcon },

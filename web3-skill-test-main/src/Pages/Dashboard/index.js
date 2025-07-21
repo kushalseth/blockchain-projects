@@ -129,6 +129,16 @@ class Dashboard extends React.Component {
     await this.init(this.props);
   }
   render() {
+    if (!this.props.account) {
+      return (
+        <Box sx={{ p: 7 }}>
+          <Typography variant="h4" align="center">
+            Please connect your wallet to view DAO information.
+          </Typography>
+        </Box>
+      );
+    }
+
     return (
       <Box sx={{ pb: 7 }}>
         <Box

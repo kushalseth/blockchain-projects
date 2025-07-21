@@ -28,7 +28,19 @@ export const Web3Provider = ({ children }) => {
 
   React.useEffect(() => {}, []);
 
+  const disconnectWallet = () => {
+    setData({ ...initialState }); // resets all state including account
+  };
+
   const walletConnect = async () => {
+    console.log(`hi i am inside walletConnect ${window.ethereum} `);
+    if (!window.ethereum) {
+      alert(
+        "🦊 MetaMask not found. Please install MetaMask to connect your wallet."
+      );
+      return;
+    }
+
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
@@ -89,10 +101,21 @@ export const Web3Provider = ({ children }) => {
     });
 
     ethereum.on("chainChanged", async (chainId) => {
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: web3.utils.toHex(1666600000) }],
-      });
+      if (!window.ethereum) {
+        alert("MetaMask not detected. Please install MetaMask to continue.");
+        return;
+      }
+
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: web3.utils.toHex(1666600000) }],
+        });
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          // Add network
+        }
+      }
     });
 
     // this.checkDashBoard(this.state.linkedAccount)
@@ -129,7 +152,7 @@ export const Web3Provider = ({ children }) => {
   };
 
   return (
-    <Web3Context.Provider value={{ ...data, walletConnect }}>
+    <Web3Context.Provider value={{ ...data, walletConnect, disconnectWallet }}>
       {children}
     </Web3Context.Provider>
   );
